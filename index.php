@@ -2,6 +2,7 @@
 
 include_once 'conexion.php';
 
+//LEER la basa de datos
 $basedatos = 'SELECT * FROM tablas';
 
 $conexion = $pdo->prepare($basedatos);
@@ -9,7 +10,23 @@ $conexion->execute();
 
 $resultado = $conexion-> fetchAll(); //con fetchAll devuelve nuestra array de la base de datos
 
-var_dump($resultado);
+//var_dump($resultado);
+
+//AGREGAR
+ 
+ 
+ if($_POST){
+   //echo $_POST['color']; //si las cosas se estan enviando por POST  quiero que me muestre los que agrego
+
+   $color = $_POST['color'];
+   $descripcion = $_POST['descripcion'];
+    //con esta variable agragamos los datos a mysql con values ?,? no permitimos las inyectiones, metodo de seguridad
+   $basedatos_agregar = ' INSERT INTO  tablas (color, descripcion) VALUES (?,?)';
+   $sentencia_agregar = $pdo->prepare($basedatos_agregar);
+   $sentencia_agregar->execute(array($color, $descripcion));
+   
+
+ }
 
 ?>
 
@@ -28,24 +45,33 @@ var_dump($resultado);
   <body>
 
     <div class="container mt-5">
-        <div class="row">
+      <div class="row">
         <div class="col-md-6">
+                <!-- Muestra de datos-->
+              <?php   foreach($resultado as $dato): ?>
+                <div class="alert alert-<?php echo $dato['color'] ?> " role="alert">
+                    <?php echo $dato['color'] ?>
+                        -
+                      <?php echo $dato['descripcion'] ?>
+                 </div>
 
-            <?php   foreach($resultado as $dato): ?>
-        <div class="alert alert-<?php echo $dato['color'] ?> " role="alert">
-                <?php echo $dato['color'] ?>
-                -
-                <?php echo $dato['descripcion'] ?>
+              <?php endforeach ?>
+      
         </div>
-
-        <?php endforeach ?>
-        </div>
+        <div class="col-md-6">
+        <h2>Agregar Elementos</h2>
+        <form method="POST">
+          <input type="text" class="form-control" name="color">
+          <input type="text" class="form-control mt-3" name="descripcion">
+          <button class="btn btn-primary mt-3">Agregar</button>
+          </form>
+        
         
         </div>
+        
+      </div>
 
     </div>
-
-    <h1>Hello, world!</h1>
 
     <!-- Optional JavaScript; choose one of the two! -->
 
